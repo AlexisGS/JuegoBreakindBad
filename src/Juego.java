@@ -41,6 +41,10 @@ public class Juego extends JFrame implements KeyListener, Runnable,
     private Objeto oBarra; //representa la barra controlada por el jugador
     private Objeto oProyectil; //representa el proyectil que destruye bloques
     private LinkedList lnkBloques; //Lista de bloques a destruir
+    private SoundClip souSonidoChoqueBloque; // Sonido que emitiran al chocar los
+            //aliens caminadore con Nena
+    private SoundClip souSonidoChoqueBarra; // Sonido que emitiran al chocar los
+            //aliens corredores con Nena
     
     
     /* objetos para manejar el buffer del Applet y este no parpadee */
@@ -65,10 +69,65 @@ public class Juego extends JFrame implements KeyListener, Runnable,
      * usarse en el <code>Applet</code> y se definen funcionalidades.
      */
     public void init() {
+        iVidas = 3; //El juego comienza con tres oportunidades
+        
+        iScore = 0; //El juego comienza con 0 puntos
+        
+        bPausado = false;//El juego no empieza pausado.
+        
+        // hago el applet de un tamaño 800, 600
+        setSize(800, 600);
+        
+        // se carga la imagen para la barra golpeadora
+        URL urlImagenBarra = this.getClass().getResource("barra neon.gif");
+        // se crea al objeto Barra de la clase objeto
+        oBarra = new Objeto(0, 0,
+                Toolkit.getDefaultToolkit().getImage(urlImagenBarra));
+        // se posiciona la barra en la parte inferior en el centro
+        oBarra.setX((getWidth() / 2) - (oBarra.getAncho() / 2));
+        oBarra.setY(getHeight() - oBarra.getAlto());
+        
+        // se carga la imagen para la barra golpeadora
+        URL urlImagenProyectil = this.getClass().getResource("barra neon.gif");
+        // se crea al objeto Proyectil de la clase objeto
+        oProyectil = new Objeto(0, 0,
+                Toolkit.getDefaultToolkit().getImage(urlImagenBarra));
+        // se posiciona el proyectil en el centro arriba de barra
+        oProyectil.setX((getWidth() / 2) - (oProyectil.getAncho() / 2));
+        oProyectil.setY(getHeight() - oProyectil.getAlto());
+        
+        // se crea la lista de Bloques a destruir
+        lnkBloques = new LinkedList();
+        // se asigna un numero random de 10 a 12 para la cantidad de bloques
+        int iRandom = (int) (1 + Math.random() * 2);
+        // se llena la lista de aliens caminadores
+        for (int iI = 0; iI < 20; iI++) {
+            // se carga la imagen del alien caminador
+            URL urlImagenCaminador
+                    = this.getClass().getResource(iRandom+".png");
+            // se crea un bloque
+            Objeto oBloque = new Objeto(0, 0,
+                    Toolkit.getDefaultToolkit().getImage(urlImagenCaminador));
+            // se posiciona al caminador al azar en X
+            oBloque.setX((int) (Math.random() * (getWidth()
+                    - oBloque.getAncho())));
+            // se posiciona al caminador al azar por arriba del applet
+            oBloque.setY((int) (Math.random() * (0
+                    - oBloque.getAlto() * 2)));
+            // Se agrega al caminador a la lista de caminadores
+            lnkBloques.add(oBloque);
+            
+        // se crea el sonido para los aliens caminadores
+        souSonidoChoqueBarra = new SoundClip("ChoqueBarra.wav");
+
+        // se crea el sonido para los aliens corredores
+        souSonidoChoqueBloque = new SoundClip("ChoqueBloque.wav");
+        }
         
         /* se le añade la opcion al applet de ser escuchado por los eventos
         /* del mouse  */
         addMouseListener(this);
+        /* del teclado */
         addKeyListener(this);
     }
     
