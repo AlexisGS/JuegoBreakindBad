@@ -35,17 +35,17 @@ import java.util.logging.Logger;
 public class Juego extends JFrame implements KeyListener, Runnable, 
         MouseListener {
     //Variables empleadas por Juego
+    private int iVelocidad; //Velocidad desarrollada por el proyectil
     private int iVidas; //cantidad de oportunidades que tiene el jugador
     private int iScore; //cantidad de puntos acumulados por el jugador
     boolean bPausado; //indica si el juego esta en pausa o no
     private Objeto oBarra; //representa la barra controlada por el jugador
     private Objeto oProyectil; //representa el proyectil que destruye bloques
     private LinkedList lnkBloques; //Lista de bloques a destruir
-    private SoundClip souSonidoChoqueBloque; // Sonido que emitiran al chocar los
-            //aliens caminadore con Nena
-    private SoundClip souSonidoChoqueBarra; // Sonido que emitiran al chocar los
-            //aliens corredores con Nena
-    
+    private SoundClip souSonidoChoqueBloque; // Sonido que emitira al chocar
+            //el proyectil contra el bloque
+    private SoundClip souSonidoChoqueBarra; // Sonido que emitira al chocar 
+            //el proyectil con la barra
     
     /* objetos para manejar el buffer del Applet y este no parpadee */
     private Image imaImagenApplet;   // Imagen a proyectar en Applet	
@@ -69,6 +69,8 @@ public class Juego extends JFrame implements KeyListener, Runnable,
      * usarse en el <code>Applet</code> y se definen funcionalidades.
      */
     public void init() {
+        iVelocidad=2;
+        
         iVidas = 3; //El juego comienza con tres oportunidades
         
         iScore = 0; //El juego comienza con 0 puntos
@@ -87,8 +89,8 @@ public class Juego extends JFrame implements KeyListener, Runnable,
         oBarra.setX((getWidth() / 2) - (oBarra.getAncho() / 2));
         oBarra.setY(getHeight() - oBarra.getAlto());
         
-        // se carga la imagen para la barra golpeadora
-        URL urlImagenProyectil = this.getClass().getResource("barra neon.gif");
+        // se carga la imagen para el proyectil
+        URL urlImagenProyectil = this.getClass().getResource("esfera.gif");
         // se crea al objeto Proyectil de la clase objeto
         oProyectil = new Objeto(0, 0,
                 Toolkit.getDefaultToolkit().getImage(urlImagenBarra));
@@ -100,29 +102,36 @@ public class Juego extends JFrame implements KeyListener, Runnable,
         lnkBloques = new LinkedList();
         // se asigna un numero random de 10 a 12 para la cantidad de bloques
         int iRandom = (int) (1 + Math.random() * 2);
-        // se llena la lista de aliens caminadores
-        for (int iI = 0; iI < 20; iI++) {
-            // se carga la imagen del alien caminador
-            URL urlImagenCaminador
+        // se llena la lista de bloques
+        int iPosBlocX=50;
+        int iPosBlocY=50;
+        while(iPosBlocY<=getHeight()-200) {
+            // se carga la imagen del bloque
+            URL urlImagenBloque
                     = this.getClass().getResource(iRandom+".png");
             // se crea un bloque
             Objeto oBloque = new Objeto(0, 0,
-                    Toolkit.getDefaultToolkit().getImage(urlImagenCaminador));
-            // se posiciona al caminador al azar en X
-            oBloque.setX((int) (Math.random() * (getWidth()
-                    - oBloque.getAncho())));
-            // se posiciona al caminador al azar por arriba del applet
-            oBloque.setY((int) (Math.random() * (0
-                    - oBloque.getAlto() * 2)));
-            // Se agrega al caminador a la lista de caminadores
+                    Toolkit.getDefaultToolkit().getImage(urlImagenBloque));
+            // se posiciona al bloque en cadena
+            oBloque.setY(iPosBlocY);
+            // se posiciona al bloque en cadena
+            if(iPosBlocX <= (getWidth() - (50 + oBloque.getAncho()))) {
+                oBloque.setX(iPosBlocX);
+                iPosBlocX = iPosBlocX + oBloque.getAncho();
+            }
+            else {
+                iPosBlocY = iPosBlocY + oBloque.getAlto();
+                iPosBlocX=50;
+            }
+            // Se agrega al bloque a la lista de caminadores
             lnkBloques.add(oBloque);
-            
-        // se crea el sonido para los aliens caminadores
+        }
+        
+        // se crea el sonido para el choque de con la barra
         souSonidoChoqueBarra = new SoundClip("ChoqueBarra.wav");
 
-        // se crea el sonido para los aliens corredores
+        // se crea el sonido para el choque con los bloques
         souSonidoChoqueBloque = new SoundClip("ChoqueBloque.wav");
-        }
         
         /* se le añade la opcion al applet de ser escuchado por los eventos
         /* del mouse  */
@@ -157,10 +166,10 @@ public class Juego extends JFrame implements KeyListener, Runnable,
      */
     public void run() {
         // se realiza el ciclo del juego hasta que se terminen las vidas
-        while (true) {
-            /* mientras dure el juego, se actualizan posiciones de objetos
-             se checa si hubo colisiones para desaparecer objetos o corregir
-             movimientos y se vuelve a pintar todo
+        while (iVidas>0) {
+            /* mientras el jugador tenga vidas, se actualizan posiciones de 
+             objetos se checa si hubo colisiones para desaparecer objetos o 
+            corregir movimientos y se vuelve a pintar todo
              */
             if(!bPausado) {
             //Si no esta pausado realiza la actualizacion y revisa la colision
@@ -185,6 +194,7 @@ public class Juego extends JFrame implements KeyListener, Runnable,
      *
      */
     public void actualiza() {
+        
     }
     
     /**
