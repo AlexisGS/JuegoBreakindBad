@@ -307,7 +307,13 @@ public class Juego extends JFrame implements KeyListener, Runnable {
      * @param keyEvent es el <code>evento</code> generado al presionar.
      * 
      */
-    public void keyPressed(KeyEvent keyEvent) {
+    public void keyPressed(KeyEvent keEvent) {
+        if(keEvent.getKeyCode() == keEvent.VK_LEFT) {
+            objBarra.setX(objBarra.getX()-2);
+        }
+        if(keEvent.getKeyCode() == keEvent.VK_RIGHT) {
+            objBarra.setX(objBarra.getX()+2);
+        }
     }
 
     /**
