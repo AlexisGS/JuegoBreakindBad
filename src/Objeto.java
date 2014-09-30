@@ -13,7 +13,6 @@ import java.awt.Image;
 import java.awt.Rectangle;
 
 public class Objeto {
-
     private int iX;     //posicion en x.       
     private int iY;     //posicion en y.
     private int iVelocidad;   // velocidad
@@ -22,7 +21,7 @@ public class Objeto {
     /**
      * Objeto
      * 
-     * Metodo constructor usado para crear el objeto
+     * Metodo constructor usado para crear el objeto tipo Objeto
      * creando el icono a partir de una imagen
      * 
      * @param iX es la <code>posicion en x</code> del objeto.
@@ -40,7 +39,7 @@ public class Objeto {
     /**
      * Objeto
      * 
-     * Metodo constructor usado para crear el objeto
+     * Metodo constructor usado para crear el objeto tipo Objeto
      * creando el icono de imagen de un objeto igual
      * 
      * @param iX es la <code>posicion en x</code> del objeto.
@@ -240,27 +239,38 @@ public class Objeto {
         this.setX(this.getX() - iVelocidad);
     }
     
+    /**
+     * reposiciona
+     * 
+     * Metodo que reposiciona al personaje en coordenadas especificas
+     * 
+     */
+    public void reposiciona(int iX, int iY) {
+        this.setX(iX);
+        this.setY(iY);
+    }
+    
     /** 
      * colisiona
      * 
      * Metodo para revisar si un objeto <code>Objeto</code> colisiona con 
-     * otro      * esto se logra con un objeto temporal de la clase 
+     * otro esto se logra con un objeto temporal de la clase 
      * <code>Rectangle</code>
      * 
-     * @param aniObjeto es el objeto <code>Objeto</code> con el que se 
+     * @param objParametro es el objeto <code>Objeto</code> con el que se 
      * compara
      * @return  un valor true si esta colisionando y false si no
      * 
      */
-    public boolean colisiona(Objeto aniParametro) {
+    public boolean colisiona(Objeto objParametro) {
         // creo un objeto rectangulo a partir de este objeto
         Rectangle recObjeto = new Rectangle(this.getX(),this.getY(),
                 this.getAncho(), this.getAlto());
         
         // creo un objeto rectangulo a partir del objeto parametro
-        Rectangle recParametro = new Rectangle(aniParametro.getX(),
-                aniParametro.getY(), aniParametro.getAncho(),
-                aniParametro.getAlto());
+        Rectangle recParametro = new Rectangle(objParametro.getX(),
+                objParametro.getY(), objParametro.getAncho(),
+                objParametro.getAlto());
         
         // si se colisionan regreso verdadero, sino regreso falso
         return recObjeto.intersects(recParametro);

@@ -42,6 +42,11 @@ public class Juego extends JFrame implements KeyListener, Runnable {
     private Objeto objBarra; // Representa la barra controlada por el jugador
     private Objeto objProyectil; // Representa el proyectil que destruye bloques
     private LinkedList lnkBloques; // Lista de bloques a destruir
+    private SoundClip socSonidoChoqueBloque; // Sonido que emitira al chocar
+            //el proyectil contra el bloque
+    private SoundClip socSonidoChoqueBarra; // Sonido que emitira al chocar 
+            //el proyectil con la barra
+    private SoundClip socSonidoFondo; // Sonido de fondo del juego
     
     /* objetos para manejar el buffer del Applet y este no parpadee */
     private Image imaImagenApplet;   // Imagen a proyectar en Applet	
@@ -77,8 +82,57 @@ public class Juego extends JFrame implements KeyListener, Runnable {
         // se posiciona la barra centrada en la parte de abajo
         objBarra.setX((getWidth() / 2) - (objBarra.getAncho() / 2));
         objBarra.setY( getHeight() - (getHeight() / 6));
+
+        // se carga la imagen para el proyectil
+        URL urlImagenProyectil = this.getClass().getResource("esfera.gif");
+        // se crea al objeto Proyectil de la clase objeto
+        objProyectil = new Objeto(0, 0,
+                Toolkit.getDefaultToolkit().getImage(urlImagenProyectil));
+        // se posiciona el proyectil en el centro arriba de barra
+        objProyectil.setX((getWidth() / 2) - (objProyectil.getAncho() / 2));
+        objProyectil.setY(objBarra.getY() - objProyectil.getAlto());
+        
+        // se crea la lista de bloques a destruir
+        lnkBloques = new LinkedList();
+        // se asigna un numero random de 10 a 30 para la cantidad de bloques
+        int iRandom = (int) (10 + Math.random() * 21);
+        // el primer bloque ira en la esquina superior izquierda
+        int iPosBlocX = getWidth() / 8;
+        int iPosBlocY = getHeight() / 8;
+        // se llena la lista de bloques
+        for (int iI = 1; iI <= iRandom; iI++) {
+            // se carga la imagen del bloque
+            URL urlImagenBloque
+                    = this.getClass().getResource("bloque.jpg");
+            // se crea un bloque
+            Objeto objBloque = new Objeto(0, 0,
+                    Toolkit.getDefaultToolkit().getImage(urlImagenBloque));
+            // se posiciona al bloque en cadena
+            objBloque.setX(iPosBlocX);
+            objBloque.setY(iPosBlocY);
+            
+            // se aumenta la posicion para el siguiente bloque
+            if(iPosBlocX < (getWidth() - getWidth() / 8 
+                    - objBloque.getAncho())) {
+                    iPosBlocX = iPosBlocX + objBloque.getAncho();
+            }
+            else {
+                iPosBlocY = iPosBlocY + objBloque.getAlto();
+                iPosBlocX = getWidth() / 8;
+            }
+            // Se agrega al bloque a la lista
+            lnkBloques.add(objBloque);
+        }
+        
+        // se crea el sonido para el choque de con la barra
+        socSonidoChoqueBarra = new SoundClip("ChoqueBarra.wav");
+
+        // se crea el sonido para el choque con los bloques
+        socSonidoChoqueBloque = new SoundClip("ChoqueBloque.wav");
+
+        
         /* se le añade la opcion al applet de ser escuchado por los eventos
-        /* del teclado  */
+        /* del teclado */
         addKeyListener(this);
     }
     
@@ -108,10 +162,10 @@ public class Juego extends JFrame implements KeyListener, Runnable {
      */
     public void run() {
         // se realiza el ciclo del juego hasta que se terminen las vidas
-        while (true) {
-            /* mientras dure el juego, se actualizan posiciones de objetos
-             se checa si hubo colisiones para desaparecer objetos o corregir
-             movimientos y se vuelve a pintar todo
+        while (iVidas>0) {
+            /* mientras el jugador tenga vidas, se actualizan posiciones de 
+             objetos se checa si hubo colisiones para desaparecer objetos o 
+            corregir movimientos y se vuelve a pintar todo
              */
             if(!bPausado) {
             //Si no esta pausado realiza la actualizacion y revisa la colision
@@ -136,6 +190,7 @@ public class Juego extends JFrame implements KeyListener, Runnable {
      *
      */
     public void actualiza() {
+        
     }
     
     /**
@@ -230,37 +285,39 @@ public class Juego extends JFrame implements KeyListener, Runnable {
     	brwEntrada.close();
     }
 
-    @Override
-    public void keyTyped(KeyEvent ke) {
+    /**
+     * keyTyped
+     * 
+     * Metodo sobrescrito de la interface <code>KeyListener</code>.<P>
+     * En este metodo maneja el evento que se genera al presionar una 
+     * tecla que no es de accion.
+     * @param e es el <code>evento</code> que se genera en al presionar.
+     * 
+     */
+    public void keyTyped(KeyEvent e) {
+        // no hay codigo pero se debe escribir el metodo
     }
 
-    @Override
-    public void keyPressed(KeyEvent ke) {
+    /**
+     * keyPressed
+     * 
+     * Metodo sobrescrito de la interface <code>KeyListener</code>.<P>
+     * En este metodo maneja el evento que se genera al dejar presionada
+     * alguna tecla.
+     * @param keyEvent es el <code>evento</code> generado al presionar.
+     * 
+     */
+    public void keyPressed(KeyEvent keyEvent) {
     }
 
-    @Override
-    public void keyReleased(KeyEvent ke) {
+    /**
+     * keyReleased
+     * 
+     * Metodo sobrescrito de la interface <code>KeyListener</code>.<P>
+     * En este metodo maneja el evento que se genera al soltar la tecla.
+     * @param keyEvent es el <code>evento</code> que se genera en al soltar las teclas.
+     */
+    public void keyReleased(KeyEvent keyEvent) {
     }
-
-    @Override
-    public void mouseClicked(MouseEvent me) {
-    }
-
-    @Override
-    public void mousePressed(MouseEvent me) {
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent me) {
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent me) {
-    }
-
-    @Override
-    public void mouseExited(MouseEvent me) {
-    }
-    
     
 }
