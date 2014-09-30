@@ -161,8 +161,8 @@ public class Juego extends JFrame implements KeyListener, Runnable {
      *
      */
     public void run() {
-        // se realiza el ciclo del juego hasta que se terminen las vidas
-        while (iVidas>0) {
+        // se realiza el ciclo del juego hasta que el usuario lo cierre
+        while (true) {
             /* mientras el jugador tenga vidas, se actualizan posiciones de 
              objetos se checa si hubo colisiones para desaparecer objetos o 
             corregir movimientos y se vuelve a pintar todo
@@ -223,7 +223,7 @@ public class Juego extends JFrame implements KeyListener, Runnable {
         }
 
         // Se crea la imagen para el background
-        URL urlImagenFondo = this.getClass().getResource("espacio.jpg");
+        URL urlImagenFondo = this.getClass().getResource("fondo.jpg");
         Image imaImagenFondo
                 = Toolkit.getDefaultToolkit().getImage(urlImagenFondo);
 
@@ -252,7 +252,7 @@ public class Juego extends JFrame implements KeyListener, Runnable {
      */
     public void paint1(Graphics graGrafico) {
         // Si las imagenes de Nena y los aliens ya se cargaron
-        if (lnkBloques!= null&&oBarra!=null&&oProyectil!=null) {
+        if (lnkBloques!= null&&objBarra!=null&&objProyectil!=null) {
         } 
         else {
             //Da un mensaje mientras se carga el dibujo	
