@@ -1,15 +1,15 @@
-/* 
+/** 
  * Juego
+ *
  * Juego tipo "Brick Breaker" de Atari con tematica de la serie "Breaking Bad"
  * de ACM. El objetivo del juego es ayudar a Hawk a acabar el contrabando de 
  * Walter destruyendo sus metanfetaminas
  * 
+ * @author Alexis García Soria (A00813330) & Diego Mayorga (A00813211)
+ * @version 1.00 31/09/2014
+ * 
  */
 
-/**
- * @version 1.00 31/09/2014
- * @author
- */
 import javax.swing.JFrame;
 import java.awt.Color;
 import java.awt.Font;
@@ -32,16 +32,16 @@ import java.io.PrintWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Juego extends JFrame implements KeyListener, Runnable, 
-        MouseListener {
-    //Variables empleadas por Juego
-    private int iVidas; //cantidad de oportunidades que tiene el jugador
-    private int iScore; //cantidad de puntos acumulados por el jugador
-    boolean bPausado; //indica si el juego esta en pausa o no
-    private Objeto oBarra; //representa la barra controlada por el jugador
-    private Objeto oProyectil; //representa el proyectil que destruye bloques
-    private LinkedList lnkBloques; //Lista de bloques a destruir
+public class Juego extends JFrame implements KeyListener, Runnable {
     
+    // Variables empleadas por Juego
+    private int iVidas; // Cantidad de oportunidades que tiene el jugador
+    private int iScore; // Cantidad de puntos acumulados por el jugador
+    private int iDireccion; // Variable para manejar la direccion de la barra
+    boolean bPausado; // Indica si el juego esta en pausa o no
+    private Objeto objBarra; // Representa la barra controlada por el jugador
+    private Objeto objProyectil; // Representa el proyectil que destruye bloques
+    private LinkedList lnkBloques; // Lista de bloques a destruir
     
     /* objetos para manejar el buffer del Applet y este no parpadee */
     private Image imaImagenApplet;   // Imagen a proyectar en Applet	
@@ -65,10 +65,20 @@ public class Juego extends JFrame implements KeyListener, Runnable,
      * usarse en el <code>Applet</code> y se definen funcionalidades.
      */
     public void init() {
+        setSize(900, 500); // Hago el applet de un tamaño 900, 500
+        iVidas = 3; // El jugador tendra 3 oportunidades
+        iScore = 0; // El score empieza en 0
         
+        // se obtiene la imagen para la barra
+        URL urlImagenBarra = this.getClass().getResource("remolqueBB.png");
+        // se crea la barra tipo Objeto
+        objBarra = new Objeto(0, 0,
+                Toolkit.getDefaultToolkit().getImage(urlImagenBarra));
+        // se posiciona la barra centrada en la parte de abajo
+        objBarra.setX((getWidth() / 2) - (objBarra.getAncho() / 2));
+        objBarra.setY( getHeight() - (getHeight() / 6));
         /* se le añade la opcion al applet de ser escuchado por los eventos
-        /* del mouse  */
-        addMouseListener(this);
+        /* del teclado  */
         addKeyListener(this);
     }
     
