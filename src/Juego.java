@@ -490,6 +490,13 @@ public class Juego extends JFrame implements KeyListener, Runnable {
         }
     }
 
+    /**
+     * acomodaBloques
+     *
+     * Metodo usado para crear una forma con los objetos tipo Objeto en una 
+     * LinkedList del <code>JFrame</code>.
+     *
+     */
     public void acomodaBloques() throws IOException {
         try { // checa si encontro el archivo
             // se lee el archivo
