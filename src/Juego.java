@@ -35,7 +35,9 @@ import java.util.logging.Logger;
 public class Juego extends JFrame implements KeyListener, Runnable {
 
     // Variables empleadas por Juego
+    private boolean bAvanzaBloque;
     private String[] strArrDatos;
+    private boolean[] bPoderes={false,false,false,false};
     private BufferedReader bfrEntrada; // Variable para leer archivos
     private int iTime; //Manejador de tiempo
     private int iNumBloques;//Cuenta cuantos bloques hay
@@ -80,6 +82,7 @@ public class Juego extends JFrame implements KeyListener, Runnable {
      */
     public void init() {
         setSize(466, 700); // Hago el applet de un tamaño 900, 500
+        bAvanzaBloque = false;
         iNumBloques = 54; // Cantidad exacta para que se forme la figura
         iVidas = 3; // El jugador tendra 3 oportunidades
         iScore = 0; // El score empieza en 0
@@ -105,7 +108,7 @@ public class Juego extends JFrame implements KeyListener, Runnable {
         objBarra.setX((getWidth() / 2) - (objBarra.getAncho() / 2));
         objBarra.setY(getHeight() - objBarra.getAlto());
         // se le asigna una velocidad de 9
-        objBarra.setVelocidad(9);
+        objBarra.setVelocidad(20);
 
         // se carga la imagen para el proyectil
         URL urlImagenProyectil
@@ -193,6 +196,16 @@ public class Juego extends JFrame implements KeyListener, Runnable {
      *
      */
     public void actualiza() {
+        //Si el indice de bloque a mover no es -1(no hay que mover bloque)...
+        if(bAvanzaBloque) {
+            for (Object objeBloque : lnkBloques) {
+                Objeto objBloque = (Objeto) objeBloque;
+                //Mueves los bloques que hay que mover
+                if(objBloque.getVelocidad()!=0) {
+                    objBloque.abajo();
+                }
+            }
+        }
         //Si la direccion X es true(el proyectil va a la derecha)
         if (bDireccionX) {
             objProyectil.derecha();
@@ -273,7 +286,6 @@ public class Juego extends JFrame implements KeyListener, Runnable {
          iVidas = 3; // se reinicia la cantidad de vidas
          iScore = 0; // se reincia el score
          }*/
-
     }
 
     /**
@@ -318,12 +330,39 @@ public class Juego extends JFrame implements KeyListener, Runnable {
             }
 
         }
-        // Checa si el proyectil choca contra los bloques
         for (Object objeBloque : lnkBloques) {
             Objeto objBloque = (Objeto) objeBloque;
+        //Checa si la barra choca con los bloques (Choca con el poder)
+        if(objBarra.colisiona(objBloque)) {
+            bPoderes[objBloque.getPoder()] = true;
+        }
+            // Checa si el proyectil choca contra los bloques
             if (objBloque.colisiona(objProyectil)) {
                 iScore++; // Se aumenta en 1 el score
-                iNumBloques--;
+                iNumBloques--; //Se resta el numero de bloques
+                //Se activa el bloque con el poder para que se mueva para abajo
+                if (objBloque.getPoder() != 0) {
+                    URL urlImagenPoder
+                            = this.getClass().getResource("metanfeta.png");
+                    objBloque.setImagen(Toolkit.getDefaultToolkit()
+                            .getImage(urlImagenPoder));
+                    objBloque.setVelocidad(2);
+                    bAvanzaBloque = true;
+                }
+                if(objProyectil.colisiona(objBloque.getX(), 
+                        objBloque.getY()) ||
+                        objProyectil.colisiona(objBloque.getX(), 
+                                objBloque.getY()+objBloque.getAlto())) {
+                    objBloque.setX(getWidth() + 50);
+                    bDireccionX = false; //va hacia arriba
+                }
+                if(objProyectil.colisiona(objBloque.getX()+objBloque.getAncho(), 
+                        objBloque.getY()) ||
+                        objProyectil.colisiona(objBloque.getX()+objBloque.getAncho(), 
+                                objBloque.getY()+objBloque.getAlto())) {
+                    objBloque.setX(getWidth() + 50);
+                    bDireccionX = true; //va hacia arriba
+                }
                 //Si la parte superior de proyectil es mayor o igual a la parte
                 //inferior del bloque(esta golpeando por abajo del bloque...
                 if((objProyectil.getY() <= objBloque.getY() 
@@ -518,12 +557,6 @@ public class Juego extends JFrame implements KeyListener, Runnable {
      *
      */
     public void keyTyped(KeyEvent keEvent) {
-        if(keEvent.getKeyCode() == keEvent.VK_LEFT) {
-            
-        }
-        else if(keEvent.getKeyCode() == keEvent.VK_RIGHT) {
-            objBarra.derecha();
-        }
     }
 
     /**
@@ -667,9 +700,18 @@ public class Juego extends JFrame implements KeyListener, Runnable {
             objBloque.setX((Integer.parseInt(strArrDatos[0])));
             // se asigna el segundo dato a la posX
             objBloque.setY((Integer.parseInt(strArrDatos[1])));
-
             // Se agrega al caminador a la lista de corredores
             lnkBloques.add(objBloque);
+        }
+        //Se le agrega poderes a bloques al azar
+        //Se le agrega poderes a bloques al azar
+        for(int iI=0; iI<lnkBloques.size(); iI++) {
+            if(1 == ((int) (1 + Math.random() * 2))) {
+                Objeto objPoderosos = (Objeto) lnkBloques.get((int) 
+                        (1 + Math.random() * 50));
+                objPoderosos.setPoder((int) (1 + Math.random() * 3));
+            }
+            
         }
     }
 

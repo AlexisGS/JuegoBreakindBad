@@ -16,7 +16,8 @@ public class Objeto {
     private int iX;     //posicion en x.       
     private int iY;     //posicion en y.
     private int iVelocidad;   // velocidad
-    private ImageIcon imiIcono;	//icono.   
+    private ImageIcon imiIcono;	//icono.
+    private int iPoder; //Poder de bloque
     
     /**
      * Objeto
@@ -32,6 +33,7 @@ public class Objeto {
     public Objeto(int iX, int iY ,Image imaImagen) {
         this.iX = iX;
         this.iY = iY;
+        this.iPoder = 0;
         imiIcono = new ImageIcon(imaImagen);
         this.iVelocidad = 1;   // default 1 en velocidad
     }
@@ -50,6 +52,7 @@ public class Objeto {
     public Objeto(int iX, int iY ,ImageIcon icoImagen) {
         this.iX = iX;
         this.iY = iY;
+        this.iPoder=0;
         imiIcono = icoImagen;
         this.iVelocidad = 1;    // default 1 en velocidad
     }
@@ -173,6 +176,30 @@ public class Objeto {
      */
     public int getVelocidad() {
         return iVelocidad;
+    }
+    
+    /**
+     * setPoder
+     * 
+     * Metodo modificador usado para cambiar el Poder del objeto 
+     * 
+     * @param iVelocidad es un <code>entero</code> con la velocidad del objeto.
+     * 
+     */
+    public void setPoder(int iPoder) {
+            this.iPoder=iPoder;
+    }
+
+    /**
+     * getPoder
+     * 
+     * Metodo de acceso que regresa el poder del objeto 
+     * 
+     * @return iVelocidad un <code>entero</code> con velocidad del objeto.
+     * 
+     */
+    public int getPoder() {
+        return iPoder;
     }
 
     /**
