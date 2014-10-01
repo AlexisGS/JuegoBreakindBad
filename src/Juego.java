@@ -239,8 +239,8 @@ public class Juego extends JFrame implements KeyListener, Runnable {
                     objProyectil.getAncho() / 2;
             //Si el nivel de Y del lado inferior del proyectil es el mismo que
             //el nivel de Y del lado superior de la barra...
-            if(objProyectil.getY() + objProyectil.getAlto() 
-                    >= objBarra.getY()) {
+            //if(objProyectil.getY() + objProyectil.getAlto() 
+                   // >= objBarra.getY()) {
                 //Dividimos el ancho de la barra en 2 secciones que otorgan 
                 //diferente velocidad dependiendo que seccion toque el proyectil
                 //Si el centro del proyectil toca la primera parte de la 
@@ -266,7 +266,7 @@ public class Juego extends JFrame implements KeyListener, Runnable {
                     bDireccionX = true; // arriba
                     bDireccionY = true; // derecha
                 }
-            }
+            //}
 
         }
         // Checa si el proyectil choca contra los bloques
