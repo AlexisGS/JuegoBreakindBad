@@ -74,7 +74,7 @@ public class Juego extends JFrame implements KeyListener, Runnable {
      * usarse en el <code>Applet</code> y se definen funcionalidades.
      */
     public void init() {
-        setSize(900, 500); // Hago el applet de un tamaño 900, 500
+        setSize(466, 700); // Hago el applet de un tamaño 900, 500
         iVidas = 3; // El jugador tendra 3 oportunidades
         iScore = 0; // El score empieza en 0
         iVelocidadX = 0; //La velocidad en X empieza en 0, la pelota solo cae
@@ -95,7 +95,8 @@ public class Juego extends JFrame implements KeyListener, Runnable {
         objBarra.setY( getHeight() - (getHeight() / 6));
 
         // se carga la imagen para el proyectil
-        URL urlImagenProyectil = this.getClass().getResource("esfera.gif");
+        URL urlImagenProyectil = 
+                this.getClass().getResource("cristalAzulBB.png");
         // se crea al objeto Proyectil de la clase objeto
         objProyectil = new Objeto(0, 0,
                 Toolkit.getDefaultToolkit().getImage(urlImagenProyectil));
@@ -114,7 +115,7 @@ public class Juego extends JFrame implements KeyListener, Runnable {
         for (int iI = 1; iI <= iRandom; iI++) {
             // se carga la imagen del bloque
             URL urlImagenBloque
-                    = this.getClass().getResource("bloque.jpg");
+                    = this.getClass().getResource("barrilBB.png");
             // se crea un bloque
             Objeto objBloque = new Objeto(0, 0,
                     Toolkit.getDefaultToolkit().getImage(urlImagenBloque));
@@ -147,7 +148,7 @@ public class Juego extends JFrame implements KeyListener, Runnable {
         addKeyListener(this);
     }
     
-        /**
+    /**
      * start
      *
      * Metodo sobrescrito de la clase <code>Applet</code>.<P>
@@ -365,25 +366,10 @@ public class Juego extends JFrame implements KeyListener, Runnable {
             imaImagenApplet = createImage(this.getSize().width,
                     this.getSize().height);
             graGraficaApplet = imaImagenApplet.getGraphics();
-            // Se crea la imagen para el background
-            URL urlImagenFondo = this.getClass().getResource("espacio.jpg");
-            Image imaImagenFondo
-                    = Toolkit.getDefaultToolkit().getImage(urlImagenFondo);
-
-            // Despliego la imagen
-            graGraficaApplet.drawImage(imaImagenFondo, 0, 0,
-                    getWidth(), getHeight(), this);
-
-            // Actualiza el Foreground.
-            graGraficaApplet.setColor(getForeground());
-            paint1(graGraficaApplet);
-
-            // Dibuja la imagen actualizada
-            graGrafico.drawImage(imaImagenApplet, 0, 0, this);
         }
 
         // Se crea la imagen para el background
-        URL urlImagenFondo = this.getClass().getResource("fondo.jpg");
+        URL urlImagenFondo = this.getClass().getResource("fondoBB.jpg");
         Image imaImagenFondo
                 = Toolkit.getDefaultToolkit().getImage(urlImagenFondo);
 
@@ -416,7 +402,7 @@ public class Juego extends JFrame implements KeyListener, Runnable {
             if(iVidas < 0) { //Si se acabaron las vidas
                 //Creo imagen de game over
                 URL urlImagenFin 
-                        = this.getClass().getResource("breaking bit.gif");
+                        = this.getClass().getResource("breaking bit.jpg");
                 Image imaImagenFin 
                         = Toolkit.getDefaultToolkit().getImage(urlImagenFin);
                 //Despliego la imagen
@@ -505,10 +491,10 @@ public class Juego extends JFrame implements KeyListener, Runnable {
      */
     public void keyPressed(KeyEvent keEvent) {
         if(keEvent.getKeyCode() == keEvent.VK_LEFT) {
-            objBarra.setX(objBarra.getX()-2);
+            objBarra.izquierda();
         }
         if(keEvent.getKeyCode() == keEvent.VK_RIGHT) {
-            objBarra.setX(objBarra.getX()+2);
+            objBarra.derecha();
         }
     }
 
