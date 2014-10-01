@@ -239,8 +239,8 @@ public class Juego extends JFrame implements KeyListener, Runnable {
                     objProyectil.getAncho() / 2;
             //Si el nivel de Y del lado inferior del proyectil es el mismo que
             //el nivel de Y del lado superior de la barra...
-            //if(objProyectil.getY() + objProyectil.getAlto() 
-                   // >= objBarra.getY()) {
+            if(objProyectil.getY() + objProyectil.getAlto() 
+                    >= objBarra.getY()) {
                 //Dividimos el ancho de la barra en 2 secciones que otorgan 
                 //diferente velocidad dependiendo que seccion toque el proyectil
                 //Si el centro del proyectil toca la primera parte de la 
@@ -249,24 +249,22 @@ public class Juego extends JFrame implements KeyListener, Runnable {
                 if((iCentroProyectil > objBarra.getX() && iCentroProyectil < 
                         objBarra.getX() + objBarra.getAncho() / 2)
                                 || (objProyectil.getX() < objBarra.getX())) {
-                    bDireccionX = true; // arriba
-                    bDireccionY = false; // izquierda
+                    bDireccionX = false; // arriba
+                    bDireccionY = true; // izquierda
                 }
                 //Si el centro del proyectil toca la ultima parte de la barra o
                 //el lado derecho del proyectil esta mas a la derecha que el 
                 //lado derecho de la barra
                 else if ((iCentroProyectil > objBarra.getX() +  
                         (objBarra.getAncho() / 2) && iCentroProyectil < 
-                                objBarra.getX() + (objBarra.getAncho() -
-                                        objBarra.getAncho() / 18)) || 
-                                                (objProyectil.getX() > 
-                                                    objBarra.getX() +
-                                                            objBarra.getAlto()))
-                                                                    {
+                        objBarra.getX() + (objBarra.getAncho() 
+                        - objBarra.getAncho() / 18)) || (objProyectil.getX() 
+                        + objProyectil.getAncho() > objBarra.getX() 
+                        + objBarra.getAncho())) {
                     bDireccionX = true; // arriba
                     bDireccionY = true; // derecha
                 }
-            //}
+            }
 
         }
         // Checa si el proyectil choca contra los bloques
