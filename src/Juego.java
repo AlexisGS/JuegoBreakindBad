@@ -114,7 +114,7 @@ public class Juego extends JFrame implements KeyListener, Runnable {
         for (int iI = 1; iI <= iRandom; iI++) {
             // se carga la imagen del bloque
             URL urlImagenBloque
-                    = this.getClass().getResource("bloque.jpg");
+                    = this.getClass().getResource("4.png");
             // se crea un bloque
             Objeto objBloque = new Objeto(0, 0,
                     Toolkit.getDefaultToolkit().getImage(urlImagenBloque));
@@ -203,18 +203,18 @@ public class Juego extends JFrame implements KeyListener, Runnable {
     public void actualiza() {
         //Si la direccion X es true(el proyectil va hacia arriba)...
         if(bDireccionX) {
-            objProyectil.setX(objProyectil.getX() + (iVelocidadX + iVelExtra));
+            objProyectil.setX(objProyectil.getX() - (iVelocidadX + iVelExtra));
         }
         //Si es false (va hacia abajo)
         else
-            objProyectil.setX(objProyectil.getX() - (iVelocidadX + iVelExtra));
+            objProyectil.setX(objProyectil.getX() + (iVelocidadX + iVelExtra));
         //Si la direccion X es true(el proyectil va hacia la derecha)...
         if(bDireccionY) {
-            objProyectil.setY(objProyectil.getY() + (iVelocidadY + iVelExtra));
+            objProyectil.setY(objProyectil.getY() - (iVelocidadY + iVelExtra));
         }
         //Si es false (va hacia la izquierda)
         else
-            objProyectil.setY(objProyectil.getY() - (iVelocidadY + iVelExtra));
+            objProyectil.setY(objProyectil.getY() + (iVelocidadY + iVelExtra));
     }
     
     /**
@@ -331,9 +331,11 @@ public class Juego extends JFrame implements KeyListener, Runnable {
         }
         //Si el Proyectil choca con cualquier limite menos el de abajo...
         if(objProyectil.getX() < 0 || objProyectil.getX() 
-                + objProyectil.getAncho() > getWidth() || objProyectil.getY() 
-                < 0) {
+                + objProyectil.getAncho() > getWidth()) {
             //Cambias su direccion al contrario
+            bDireccionX = !bDireccionX;
+        }
+        else if(objProyectil.getY() < 0) {
             bDireccionX = !bDireccionX;
             bDireccionY = !bDireccionY;
         }
@@ -383,7 +385,7 @@ public class Juego extends JFrame implements KeyListener, Runnable {
         }
 
         // Se crea la imagen para el background
-        URL urlImagenFondo = this.getClass().getResource("fondo.jpg");
+        URL urlImagenFondo = this.getClass().getResource("breaking bit.jpg");
         Image imaImagenFondo
                 = Toolkit.getDefaultToolkit().getImage(urlImagenFondo);
 
@@ -411,12 +413,12 @@ public class Juego extends JFrame implements KeyListener, Runnable {
      *
      */
     public void paint1(Graphics graGrafico) {
-        // Si las imagenes de Nena y los aliens ya se cargaron
+        // Si las imagenes ya se cargaron
         if (lnkBloques!= null&&objBarra!=null&&objProyectil!=null) {
             if(iVidas < 0) { //Si se acabaron las vidas
                 //Creo imagen de game over
                 URL urlImagenFin 
-                        = this.getClass().getResource("breaking bit.gif");
+                        = this.getClass().getResource("breaking bit.jpg");
                 Image imaImagenFin 
                         = Toolkit.getDefaultToolkit().getImage(urlImagenFin);
                 //Despliego la imagen
