@@ -3,10 +3,10 @@
  * Clase Main
  *
  * Sirve para cargar el JFrame en el que se controlara una barra para destruir
- * los bloques de metanfetamina que Walter usa para controlar su imperio 
+ * los bloques de metanfetamina que 
  *
  * @authors Alexis García Soria (A00813330) & Diego Mayorga (A00813211)
- * @version 1.00 30/09/2014
+ * @version 1.00 17/09/2014
  * 
  */
 

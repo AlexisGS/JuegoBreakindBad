@@ -36,6 +36,8 @@ public class Juego extends JFrame implements KeyListener, Runnable {
     
     // Variables empleadas por Juego
     private int iTime; //Manejador de tiempo
+    private int iNumBloques;//Cuenta cuantos bloques hay
+    private int iNumDestruidos; //Cuenta cuantos bloques se destruyeron
     private int iVidas; // Cantidad de oportunidades que tiene el jugador
     private int iVelocidadY; //Velocidad en Y
     private int iVelocidadX; //Velocidad en X
@@ -76,6 +78,8 @@ public class Juego extends JFrame implements KeyListener, Runnable {
      */
     public void init() {
         setSize(466, 700); // Hago el applet de un tamaño 900, 500
+        iNumBloques = 0; //Aun no se crean los bloques
+        iNumDestruidos = 0; //Aun no se destruye ningun bloque
         iVidas = 3; // El jugador tendra 3 oportunidades
         iScore = 0; // El score empieza en 0
         iVelocidadX = 0; //La velocidad en X empieza en 0, la pelota solo cae
@@ -113,6 +117,7 @@ public class Juego extends JFrame implements KeyListener, Runnable {
         lnkBloques = new LinkedList();
         // se asigna un numero random de 10 a 30 para la cantidad de bloques
         int iRandom = (int) (10 + Math.random() * 21);
+        iNumBloques = iRandom;
         // el primer bloque ira en la esquina superior izquierda
         int iPosBlocX = getWidth() / 8;
         int iPosBlocY = getHeight() / 8;
@@ -179,7 +184,7 @@ public class Juego extends JFrame implements KeyListener, Runnable {
      */
     public void run() {
         // se realiza el ciclo del juego hasta que el usuario lo cierre
-        while (true) {
+        while (iVidas > 0 && iNumDestruidos != iNumBloques) {
             /* mientras el jugador tenga vidas, se actualizan posiciones de 
              objetos se checa si hubo colisiones para desaparecer objetos o 
             corregir movimientos y se vuelve a pintar todo
@@ -216,7 +221,7 @@ public class Juego extends JFrame implements KeyListener, Runnable {
             objProyectil.izquierda();
         
         //Si la direccion Y es true(el proyectil va hacia arriba)
-        if(bDireccionY) {
+        if(!bDireccionY) {
             objProyectil.arriba();
         }
         //Si es false (va hacia abajo)
@@ -250,7 +255,7 @@ public class Juego extends JFrame implements KeyListener, Runnable {
                         objBarra.getX() + objBarra.getAncho() / 2)
                                 || (objProyectil.getX() < objBarra.getX())) {
                     bDireccionX = false; // arriba
-                    bDireccionY = true; // izquierda
+                    bDireccionY = false; // izquierda
                 }
                 //Si el centro del proyectil toca la ultima parte de la barra o
                 //el lado derecho del proyectil esta mas a la derecha que el 
@@ -262,7 +267,7 @@ public class Juego extends JFrame implements KeyListener, Runnable {
                         + objProyectil.getAncho() > objBarra.getX() 
                         + objBarra.getAncho())) {
                     bDireccionX = true; // arriba
-                    bDireccionY = true; // derecha
+                    bDireccionY = false; // derecha
                 }
             }
 
@@ -272,21 +277,26 @@ public class Juego extends JFrame implements KeyListener, Runnable {
             Objeto objBloque = (Objeto) objeBloque;
             if (objBloque.colisiona(objProyectil)) {
                 iScore++; // Se aumenta en 1 el score
+                iNumDestruidos++;
                 //Si la parte superior de proyectil es mayor o igual a la parte
                 //inferior del bloque(esta golpeando por abajo del bloque...
-                if(objProyectil.getY() <= objBloque.getY() 
+                if(objProyectil.getY() >= objBloque.getY() 
                         + objBloque.getAlto()) {
+                    objBloque.setX(getWidth()+50);
                     bDireccionY = false; //va hacia abajo
+                    
                 }
                 //parte inferior del proyectil es menor o igual a la de la parte
                 //superior del bloque(esta golpeando por arriba)...
                 else if( objProyectil.getY() + objProyectil.getAlto() 
-                        >= objBloque.getY()) {
+                        <= objBloque.getY()) {
+                    objBloque.setX(getWidth() + 50);
                     bDireccionY = true; //va hacia arriba
                 }
                 //Si esta golpeando por algun otro lugar (los lados)...
                 else
-                    bDireccionX = !bDireccionX; //Direccion contraria de X
+                    objBloque.setX(getWidth()+50);
+                    bDireccionX = !bDireccionX;
         }
         }
         //Si la barra choca con el lado izquierdo...
@@ -406,6 +416,8 @@ public class Juego extends JFrame implements KeyListener, Runnable {
                 graGrafico.drawString("Score: "+ iScore, 25, 70);
                 //Muestra la cantidad de vidas
                 graGrafico.drawString("Vidas: "+iVidas, 25, 50);
+                //Muestra la cantidad de Destruidos
+                graGrafico.drawString("Destruidos: "+iNumDestruidos, 25, 100);
             }
         } 
         else {
