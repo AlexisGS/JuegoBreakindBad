@@ -206,18 +206,19 @@ public class Juego extends JFrame implements KeyListener, Runnable {
     public void actualiza() {
         //Si la direccion X es true(el proyectil va hacia arriba)...
         if(bDireccionX) {
-            objProyectil.setX(objProyectil.getX() - (iVelocidadX + iVelExtra));
+            objProyectil.arriba();
         }
         //Si es false (va hacia abajo)
         else
-            objProyectil.setX(objProyectil.getX() + (iVelocidadX + iVelExtra));
-        //Si la direccion X es true(el proyectil va hacia la derecha)...
+            objProyectil.abajo();
+        
+        //Si la direccion Y es true(el proyectil va hacia la derecha)...
         if(bDireccionY) {
-            objProyectil.setY(objProyectil.getY() - (iVelocidadY + iVelExtra));
+            objProyectil.derecha();
         }
         //Si es false (va hacia la izquierda)
         else
-            objProyectil.setY(objProyectil.getY() + (iVelocidadY + iVelExtra));
+            objProyectil.izquierda();
     }
     
     /**
@@ -244,60 +245,26 @@ public class Juego extends JFrame implements KeyListener, Runnable {
                 //izquierda que el lado izquierdo de la barra...
                 if((iCentroProyectil > objBarra.getX() && iCentroProyectil < 
                         objBarra.getX() + objBarra.getAncho() / 2)
-                        || (objProyectil.getX() < objBarra.getX())) {
-                    //Disminuimos mas el lado de y para que la barra avanze en
-                    //diagonal, como es el extremo mas alejado de la barra el 
-                    //proyectil avanzara mas inclinado(izq.).
-                    iVelocidadY = 3;
-                    iVelocidadX = 7;
-                    //el proyectil ahora va hacia arriba
-                    bDireccionY = true;
-                    //el proyectil tambien ahora va hacia la izquierda
-                    bDireccionX = true;
+                                || (objProyectil.getX() < objBarra.getX())) {
+                    bDireccionX = true; // arriba
+                    bDireccionY = false; // izquierda
                 }
                 //Si el centro del proyectil toca la ultima parte de la barra o
                 //el lado derecho del proyectil esta mas a la derecha que el 
                 //lado derecho de la barra
                 else if ((iCentroProyectil > objBarra.getX() +  
                         (objBarra.getAncho() / 2) && iCentroProyectil < 
-                        objBarra.getX() + (objBarra.getAncho() 
-                        - objBarra.getAncho() / 18)) 
-                        || (objProyectil.getX() > objBarra.getX() 
-                        + objBarra.getAlto())) {
-                    //el proyectil avanzara inclinado(der.)
-                    iVelocidadY = 3;
-                    iVelocidadX = 7;
-                    //el proyectil ahora va hacia arriba
-                    bDireccionY = true;
-                    //el proyectil tambien ahora va hacia la derecha
-                    bDireccionX = false;
+                                objBarra.getX() + (objBarra.getAncho() -
+                                        objBarra.getAncho() / 18)) || 
+                                                (objProyectil.getX() > 
+                                                    objBarra.getX() +
+                                                            objBarra.getAlto()))
+                                                                    {
+                    bDireccionX = true; // arriba
+                    bDireccionY = true; // derecha
                 }
             }
-//            //Si el nivel de Y del lado inferior del proyectil es menor que el 
-//            //nivel de Y del lado superior de la barra, y lo esta tocando por el
-//            //lado izquierdo...
-//            else if(objProyectil.colisiona(objBarra.getX(), objBarra.getY())) {
-//                //El proyectil rebota hacia la izquierda diagonalmente
-//                iVelocidadY = 3;
-//                iVelocidadX = 8;
-//                //el proyectil ahora va hacia arriba
-//                bDireccionY = true;
-//                //el proyectil tambien ahora va hacia la izquierda
-//                bDireccionX = true;
-//            }
-//            //Si el nivel de Y del lado inferior del proyectil es menor que el 
-//            //nivel de Y del lado superior de la barra, y lo esta tocando por el
-//            //lado derecho...
-//            else if(objProyectil.colisiona(objBarra.getX() 
-//                    + objBarra.getAncho(), objBarra.getY())) {
-//                //El proyectil rebota hacia la derecha diagonalmente
-//                iVelocidadY = 3;
-//                iVelocidadX = 8;
-//                //el proyectil ahora va hacia arriba
-//                bDireccionY = true;
-//                //el proyectil tambien ahora va hacia la derecha
-//                bDireccionX = false;
-//            }
+
         }
         // Checa si el proyectil choca contra los bloques
         for (Object objeBloque : lnkBloques) {
