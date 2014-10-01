@@ -280,25 +280,31 @@ public class Juego extends JFrame implements KeyListener, Runnable {
             if (objBloque.colisiona(objProyectil)) {
                 iScore++; // Se aumenta en 1 el score
                 iNumDestruidos++;
+                boolean bIfActivado=false;
                 //Si la parte superior de proyectil es mayor o igual a la parte
                 //inferior del bloque(esta golpeando por abajo del bloque...
-                if(objProyectil.getY() >= objBloque.getY() 
-                        + objBloque.getAlto()) {
-                    objBloque.setX(getWidth()+50);
-                    bDireccionY = false; //va hacia abajo
+                if((objProyectil.getY() <= objBloque.getY() 
+                        + objBloque.getAlto()) && (objProyectil.getY() 
+                        + objProyectil.getAlto() > objBloque.getY() 
+                        + objBloque.getAlto())) {
+                    objBloque.setX(getWidth() + 50);
+                    bDireccionY = true; //va hacia abajo
+                    
                     
                 }
                 //parte inferior del proyectil es menor o igual a la de la parte
                 //superior del bloque(esta golpeando por arriba)...
-                else if( objProyectil.getY() + objProyectil.getAlto() 
-                        <= objBloque.getY()) {
+                else if(( objProyectil.getY() + objProyectil.getAlto()
+                        >= objBloque.getY())&&( objProyectil.getY() 
+                        < objBloque.getY())) {
                     objBloque.setX(getWidth() + 50);
-                    bDireccionY = true; //va hacia arriba
+                    bDireccionY = false; //va hacia arriba
                 }
                 //Si esta golpeando por algun otro lugar (los lados)...
-                else
+                else {
                     objBloque.setX(getWidth()+50);
                     bDireccionX = !bDireccionX;
+                }
         }
         }
         //Si la barra choca con el lado izquierdo...
@@ -330,7 +336,6 @@ public class Juego extends JFrame implements KeyListener, Runnable {
                     - (objProyectil.getAncho() / 2));
             objProyectil.setY(objBarra.getY() - objProyectil.getAlto());
         }
-        
     }
     
     /**
@@ -463,8 +468,13 @@ public class Juego extends JFrame implements KeyListener, Runnable {
      * @param e es el <code>evento</code> que se genera en al presionar.
      * 
      */
-    public void keyTyped(KeyEvent e) {
-        // no hay codigo pero se debe escribir el metodo
+    public void keyTyped(KeyEvent keEvent) {
+        if(keEvent.getKeyCode() == keEvent.VK_LEFT) {
+            
+        }
+        else if(keEvent.getKeyCode() == keEvent.VK_RIGHT) {
+            objBarra.derecha();
+        }
     }
 
     /**
