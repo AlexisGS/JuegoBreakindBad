@@ -1,13 +1,14 @@
-/** 
+
+/**
  * Juego
  *
  * Juego tipo "Brick Breaker" de Atari con tematica de la serie "Breaking Bad"
- * de ACM. El objetivo del juego es ayudar a Hawk a acabar el contrabando de 
+ * de ACM. El objetivo del juego es ayudar a Hawk a acabar el contrabando de
  * Walter destruyendo sus metanfetaminas
- * 
+ *
  * @author Alexis García Soria (A00813330) & Diego Mayorga (A00813211)
  * @version 1.00 31/09/2014
- * 
+ *
  */
 
 import javax.swing.JFrame;
@@ -33,7 +34,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Juego extends JFrame implements KeyListener, Runnable {
-    
+
     // Variables empleadas por Juego
     private int iTime; //Manejador de tiempo
     private int iVidas; // Cantidad de oportunidades que tiene el jugador
@@ -48,11 +49,13 @@ public class Juego extends JFrame implements KeyListener, Runnable {
     private Objeto objProyectil; // Representa el proyectil que destruye bloques
     private LinkedList lnkBloques; // Lista de bloques a destruir
     private SoundClip socSonidoChoqueBloque; // Sonido que emitira al chocar
-            //el proyectil contra el bloque
+    //el proyectil contra el bloque
     private SoundClip socSonidoChoqueBarra; // Sonido que emitira al chocar 
-            //el proyectil con la barra
+    //el proyectil con la barra
     private SoundClip socSonidoFondo; // Sonido de fondo del juego
-    
+    private BufferedReader bfrEntrada; // Variable para leer archivos
+    private String[] strArrDatos; // Variable para leer datos dobles
+
     /* objetos para manejar el buffer del Applet y este no parpadee */
     private Image imaImagenApplet;   // Imagen a proyectar en Applet	
     private Graphics graGraficaApplet;  // Objeto grafico de la Imagen
@@ -66,7 +69,7 @@ public class Juego extends JFrame implements KeyListener, Runnable {
         init(); // Llama al metodo init para inicializar todas las variables
         start(); // Llama al metodo start para crear el hilo
     }
-    
+
     /**
      * init
      *
@@ -85,7 +88,7 @@ public class Juego extends JFrame implements KeyListener, Runnable {
         bDireccionY = true;
         // La direccion que nos interesa es: false: Izq. true: Dererecha
         bDireccionX = true;
-        
+
         // se obtiene la imagen para la barra
         URL urlImagenBarra = this.getClass().getResource("remolqueBB.png");
         // se crea la barra tipo Objeto
@@ -93,13 +96,14 @@ public class Juego extends JFrame implements KeyListener, Runnable {
                 Toolkit.getDefaultToolkit().getImage(urlImagenBarra));
         // se posiciona la barra centrada en la parte de abajo
         objBarra.setX((getWidth() / 2) - (objBarra.getAncho() / 2));
-        objBarra.setY( getHeight() - (getHeight() / 6));
+        objBarra.setY(getHeight() - (objBarra.getAlto() 
+                - objBarra.getAlto() / 8));
         // se le asigna una velocidad de 6
         objBarra.setVelocidad(9);
 
         // se carga la imagen para el proyectil
-        URL urlImagenProyectil = 
-                this.getClass().getResource("cristalAzulBB.png");
+        URL urlImagenProyectil
+                = this.getClass().getResource("cristalAzulBB.png");
         // se crea al objeto Proyectil de la clase objeto
         objProyectil = new Objeto(0, 0,
                 Toolkit.getDefaultToolkit().getImage(urlImagenProyectil));
@@ -108,51 +112,56 @@ public class Juego extends JFrame implements KeyListener, Runnable {
         objProyectil.setY(objBarra.getY() - objProyectil.getAlto());
         // se le asigna una velocidad de 5
         objProyectil.setVelocidad(5);
-        
+
         // se crea la lista de bloques a destruir
         lnkBloques = new LinkedList();
-        // se asigna un numero random de 10 a 30 para la cantidad de bloques
-        int iRandom = (int) (10 + Math.random() * 21);
-        // el primer bloque ira en la esquina superior izquierda
-        int iPosBlocX = getWidth() / 8;
-        int iPosBlocY = getHeight() / 8;
-        // se llena la lista de bloques
-        for (int iI = 1; iI <= iRandom; iI++) {
-            // se carga la imagen del bloque
-            URL urlImagenBloque
-                    = this.getClass().getResource("barrilBB.png");
-            // se crea un bloque
-            Objeto objBloque = new Objeto(0, 0,
-                    Toolkit.getDefaultToolkit().getImage(urlImagenBloque));
-            // se posiciona al bloque en cadena
-            objBloque.setX(iPosBlocX);
-            objBloque.setY(iPosBlocY);
-            
-            // se aumenta la posicion para el siguiente bloque
-            if(iPosBlocX < (getWidth() - getWidth() / 8 
-                    - objBloque.getAncho())) {
-                    iPosBlocX = iPosBlocX + objBloque.getAncho();
-            }
-            else {
-                iPosBlocY = iPosBlocY + objBloque.getAlto();
-                iPosBlocX = getWidth() / 8;
-            }
-            // Se agrega al bloque a la lista
-            lnkBloques.add(objBloque);
+        try {
+            acomodaBloques();
+        } catch (IOException ioeError) {
+            System.out.println("Hubo un error al cargar el juego: "
+                    + ioeError.toString());
         }
-        
+
+        /* se asigna un numero random de 10 a 30 para la cantidad de bloques
+         int iRandom = (int) (10 + Math.random() * 21);
+         // el primer bloque ira en la esquina superior izquierda
+         int iPosBlocX = getWidth() / 8;
+         int iPosBlocY = getHeight() / 8;
+         // se llena la lista de bloques
+         for (int iI = 1; iI <= iRandom; iI++) {
+         // se carga la imagen del bloque
+         URL urlImagenBloque
+         = this.getClass().getResource("barrilBB.png");
+         // se crea un bloque
+         Objeto objBloque = new Objeto(0, 0,
+         Toolkit.getDefaultToolkit().getImage(urlImagenBloque));
+         // se posiciona al bloque en cadena
+         objBloque.setX(iPosBlocX);
+         objBloque.setY(iPosBlocY);
+            
+         // se aumenta la posicion para el siguiente bloque
+         if(iPosBlocX < (getWidth() - getWidth() / 8 
+         - objBloque.getAncho())) {
+         iPosBlocX = iPosBlocX + objBloque.getAncho();
+         }
+         else {
+         iPosBlocY = iPosBlocY + objBloque.getAlto();
+         iPosBlocX = getWidth() / 8;
+         }
+         // Se agrega al bloque a la lista
+         lnkBloques.add(objBloque);
+         }*/
         // se crea el sonido para el choque de con la barra
         socSonidoChoqueBarra = new SoundClip("ChoqueBarra.wav");
 
         // se crea el sonido para el choque con los bloques
         socSonidoChoqueBloque = new SoundClip("ChoqueBloque.wav");
 
-        
         /* se le añade la opcion al applet de ser escuchado por los eventos
-        /* del teclado */
+         /* del teclado */
         addKeyListener(this);
     }
-    
+
     /**
      * start
      *
@@ -168,7 +177,7 @@ public class Juego extends JFrame implements KeyListener, Runnable {
         // Empieza el hilo
         th.start();
     }
-    
+
     /**
      * run
      *
@@ -182,10 +191,10 @@ public class Juego extends JFrame implements KeyListener, Runnable {
         while (true) {
             /* mientras el jugador tenga vidas, se actualizan posiciones de 
              objetos se checa si hubo colisiones para desaparecer objetos o 
-            corregir movimientos y se vuelve a pintar todo
+             corregir movimientos y se vuelve a pintar todo
              */
-            if(!bPausado) {
-            //Si no esta pausado realiza la actualizacion y revisa la colision
+            if (!bPausado) {
+                //Si no esta pausado realiza la actualizacion y revisa la colision
                 actualiza();
                 checaColision();
             }
@@ -199,7 +208,7 @@ public class Juego extends JFrame implements KeyListener, Runnable {
             }
         }
     }
-    
+
     /**
      * actualiza
      *
@@ -208,58 +217,57 @@ public class Juego extends JFrame implements KeyListener, Runnable {
      */
     public void actualiza() {
         //Si la direccion X es true(el proyectil va a la derecha)
-        if(bDireccionX) {
+        if (bDireccionX) {
             objProyectil.derecha();
-        }
-        //Si es false (va ala izquierda)
-        else
+        } //Si es false (va ala izquierda)
+        else {
             objProyectil.izquierda();
-        
-        //Si la direccion Y es true(el proyectil va hacia arriba)
-        if(bDireccionY) {
-            objProyectil.arriba();
         }
-        //Si es false (va hacia abajo)
-        else
+
+        //Si la direccion Y es true(el proyectil va hacia arriba)
+        if (bDireccionY) {
+            objProyectil.arriba();
+        } //Si es false (va hacia abajo)
+        else {
             objProyectil.abajo();
+        }
     }
-    
+
     /**
      * checaColision
      *
-     * Metodo usado para checar la colision de los objetos entre ellos y
-     * con las orillas del <code>Applet</code>.
+     * Metodo usado para checar la colision de los objetos entre ellos y con las
+     * orillas del <code>Applet</code>.
      *
      */
     public void checaColision() {
         //Si el proyectil colisiona con la barra entonces..
-        if(objBarra.colisiona(objProyectil)) {
+        if (objBarra.colisiona(objProyectil)) {
             //Guardo el centro x del proyectil para no facilitar su comparacion
-            int iCentroProyectil = objProyectil.getX() + 
-                    objProyectil.getAncho() / 2;
+            int iCentroProyectil = objProyectil.getX()
+                    + objProyectil.getAncho() / 2;
             //Si el nivel de Y del lado inferior del proyectil es el mismo que
             //el nivel de Y del lado superior de la barra...
-            if(objProyectil.getY() + objProyectil.getAlto() 
+            if (objProyectil.getY() + objProyectil.getAlto()
                     >= objBarra.getY()) {
                 //Dividimos el ancho de la barra en 2 secciones que otorgan 
                 //diferente velocidad dependiendo que seccion toque el proyectil
                 //Si el centro del proyectil toca la primera parte de la 
                 //barra o el lado izquierdo del proyectil esta mas a la 
                 //izquierda que el lado izquierdo de la barra...
-                if((iCentroProyectil > objBarra.getX() && iCentroProyectil < 
-                        objBarra.getX() + objBarra.getAncho() / 2)
-                                || (objProyectil.getX() < objBarra.getX())) {
+                if ((iCentroProyectil > objBarra.getX() && iCentroProyectil
+                        < objBarra.getX() + objBarra.getAncho() / 2)
+                        || (objProyectil.getX() < objBarra.getX())) {
                     bDireccionX = false; // arriba
                     bDireccionY = true; // izquierda
-                }
-                //Si el centro del proyectil toca la ultima parte de la barra o
+                } //Si el centro del proyectil toca la ultima parte de la barra o
                 //el lado derecho del proyectil esta mas a la derecha que el 
                 //lado derecho de la barra
-                else if ((iCentroProyectil > objBarra.getX() +  
-                        (objBarra.getAncho() / 2) && iCentroProyectil < 
-                        objBarra.getX() + (objBarra.getAncho() 
-                        - objBarra.getAncho() / 18)) || (objProyectil.getX() 
-                        + objProyectil.getAncho() > objBarra.getX() 
+                else if ((iCentroProyectil > objBarra.getX()
+                        + (objBarra.getAncho() / 2) && iCentroProyectil
+                        < objBarra.getX() + (objBarra.getAncho()
+                        - objBarra.getAncho() / 18)) || (objProyectil.getX()
+                        + objProyectil.getAncho() > objBarra.getX()
                         + objBarra.getAncho())) {
                     bDireccionX = true; // arriba
                     bDireccionY = true; // derecha
@@ -274,53 +282,49 @@ public class Juego extends JFrame implements KeyListener, Runnable {
                 iScore++; // Se aumenta en 1 el score
                 //Si la parte superior de proyectil es mayor o igual a la parte
                 //inferior del bloque(esta golpeando por abajo del bloque...
-                if(objProyectil.getY() <= objBloque.getY() 
+                if (objProyectil.getY() <= objBloque.getY()
                         + objBloque.getAlto()) {
                     bDireccionY = false; //va hacia abajo
-                }
-                //parte inferior del proyectil es menor o igual a la de la parte
+                } //parte inferior del proyectil es menor o igual a la de la parte
                 //superior del bloque(esta golpeando por arriba)...
-                else if( objProyectil.getY() + objProyectil.getAlto() 
+                else if (objProyectil.getY() + objProyectil.getAlto()
                         >= objBloque.getY()) {
                     bDireccionY = true; //va hacia arriba
-                }
-                //Si esta golpeando por algun otro lugar (los lados)...
-                else
+                } //Si esta golpeando por algun otro lugar (los lados)...
+                else {
                     bDireccionX = !bDireccionX; //Direccion contraria de X
-        }
+                }
+            }
         }
         //Si la barra choca con el lado izquierdo...
-        if(objBarra.getX() < 0) {
+        if (objBarra.getX() < 0) {
             objBarra.setX(0); //Se posiciona al principio antes de salir
-        }
-        //Si toca el lado derecho del Jframe...
-        else if(objBarra.getX() + objBarra.getAncho() - objBarra.getAncho() / 18 
+        } //Si toca el lado derecho del Jframe...
+        else if (objBarra.getX() + objBarra.getAncho() - objBarra.getAncho() / 18
                 > getWidth()) {
-            objBarra.setX(getWidth() - objBarra.getAncho() + objBarra.getAncho() 
+            objBarra.setX(getWidth() - objBarra.getAncho() + objBarra.getAncho()
                     / 18);// Se posiciciona al final antes de salir
         }
         //Si el Proyectil choca con cualquier limite de los lados...
-        if(objProyectil.getX() < 0 || objProyectil.getX() 
+        if (objProyectil.getX() < 0 || objProyectil.getX()
                 + objProyectil.getAncho() > getWidth()) {
             //Cambias su direccion al contrario
             bDireccionX = !bDireccionX;
-        }
-        //Si el Proyectil choca con la parte superior del Jframe...
-        else if(objProyectil.getY() < 0) {
+        } //Si el Proyectil choca con la parte superior del Jframe...
+        else if (objProyectil.getY() < 0) {
             //Cambias su direccion al contrario
             bDireccionY = !bDireccionY;
-        }
-        //Si el proyectil toca el fondo del Jframe...
-        else if(objProyectil.getY() + objProyectil.getAlto() > getHeight()) {
+        } //Si el proyectil toca el fondo del Jframe...
+        else if (objProyectil.getY() + objProyectil.getAlto() > getHeight()) {
             iVidas--; //Se resta una vida.
             // se posiciona el proyectil en el centro arriba de barra
-            objProyectil.setX((objBarra.getX() + objBarra.getAncho()) / 2 
-                    - (objProyectil.getAncho() / 2));
-            objProyectil.setY(objBarra.getY() - objProyectil.getAlto());
+            objProyectil.reposiciona((objBarra.getX() + objBarra.getAncho() / 2
+                    - (objProyectil.getAncho() / 2)), (objBarra.getY()
+                    - objProyectil.getAlto()));
         }
-        
+
     }
-    
+
     /**
      * paint
      *
@@ -356,7 +360,7 @@ public class Juego extends JFrame implements KeyListener, Runnable {
         // Dibuja la imagen actualizada
         graGrafico.drawImage(imaImagenApplet, 0, 0, this);
     }
-    
+
     /**
      * paint1
      *
@@ -370,83 +374,82 @@ public class Juego extends JFrame implements KeyListener, Runnable {
      */
     public void paint1(Graphics graGrafico) {
         // Si las imagenes ya se cargaron
-        if (lnkBloques!= null&&objBarra!=null&&objProyectil!=null) {
-            if(iVidas < 0) { //Si se acabaron las vidas
+        if (lnkBloques != null && objBarra != null && objProyectil != null) {
+            if (iVidas < 0) { //Si se acabaron las vidas
                 //Creo imagen de game over
-                URL urlImagenFin 
+                URL urlImagenFin
                         = this.getClass().getResource("breaking bit.jpg");
-                Image imaImagenFin 
+                Image imaImagenFin
                         = Toolkit.getDefaultToolkit().getImage(urlImagenFin);
                 //Despliego la imagen
                 graGraficaApplet.drawImage(imaImagenFin, 0, 0, getWidth(),
                         getHeight(), this);
-            }
-            else { //si el juego sigue corriendo
+            } else { //si el juego sigue corriendo
                 //Dibuja la imagen de la barra en la posicion actualizada
-                graGrafico.drawImage(objBarra.getImagen(), 
+                graGrafico.drawImage(objBarra.getImagen(),
                         objBarra.getX(), objBarra.getY(), this);
-                
+
                 //Dibuja la imagen del proyectil en la posicicion actualizada
-                graGrafico.drawImage(objProyectil.getImagen(), 
+                graGrafico.drawImage(objProyectil.getImagen(),
                         objProyectil.getX(), objProyectil.getY(), this);
-                
+
                 //Dibuja la lista de bloques en la posicion actualizada
-                for(Object objeBloque : lnkBloques) {
+                for (Object objeBloque : lnkBloques) {
                     Objeto objBloque = (Objeto) objeBloque;
-                    graGrafico.drawImage(objBloque.getImagen(), 
+                    graGrafico.drawImage(objBloque.getImagen(),
                             objBloque.getX(), objBloque.getY(), this);
                 }
-                
+
                 //Se despliega el score y las vidas
                 //Se crea estilo de Font para el texto
-                Font strTexto= new Font("SansSerif", Font.PLAIN, 20);
+                Font strTexto = new Font("SansSerif", Font.PLAIN, 20);
                 //Se asigna este estilo de Font al grafico
                 graGrafico.setFont(strTexto);
                 //Muestra el Score
-                graGrafico.drawString("Score: "+ iScore, 25, 70);
+                graGrafico.drawString("Score: " + iScore, 25, 70);
                 //Muestra la cantidad de vidas
-                graGrafico.drawString("Vidas: "+iVidas, 25, 50);
+                graGrafico.drawString("Vidas: " + iVidas, 25, 50);
             }
-        } 
-        else {
+        } else {
             //Da un mensaje mientras se carga el dibujo	
             graGrafico.drawString("No se cargo la imagen..", 20, 20);
         }
     }
-    
+
     /**
      * Metodo que lee a informacion de un archivo y lo agrega a un vector.
      *
      * @throws IOException
      */
-    public void leeArchivo() throws IOException{
+    public void leeArchivo() throws IOException {
         // defino el objeto de Entrada para tomar datos
-    	BufferedReader brwEntrada;
-    	try{
-                // creo el objeto de entrada a partir de un archivo de texto
-    		brwEntrada = new BufferedReader(new FileReader("datos.txt"));
-    	} catch (FileNotFoundException e){
-                // si marca error es que el archivo no existia entonces lo creo
-    		File filPuntos = new File("datos.txt");
-    		PrintWriter prwSalida = new PrintWriter(filPuntos);
+        BufferedReader brwEntrada;
+        try {
+            // creo el objeto de entrada a partir de un archivo de texto
+            brwEntrada = new BufferedReader(new FileReader("datos.txt"));
+        } catch (FileNotFoundException e) {
+            // si marca error es que el archivo no existia entonces lo creo
+            File filPuntos = new File("datos.txt");
+            PrintWriter prwSalida = new PrintWriter(filPuntos);
                 // le pongo datos ficticios o de default
-                // lo cierro para que se grabe lo que meti al archivo
-    		prwSalida.close();
-                // lo vuelvo a abrir porque el objetivo es leer datos
-    		brwEntrada = new BufferedReader(new FileReader("datos.txt"));
-    	}
+            // lo cierro para que se grabe lo que meti al archivo
+            prwSalida.close();
+            // lo vuelvo a abrir porque el objetivo es leer datos
+            brwEntrada = new BufferedReader(new FileReader("datos.txt"));
+        }
         // con el archivo abierto leo los datos que estan guardados
-    	brwEntrada.close();
+        brwEntrada.close();
     }
 
     /**
      * keyTyped
-     * 
+     *
      * Metodo sobrescrito de la interface <code>KeyListener</code>.<P>
-     * En este metodo maneja el evento que se genera al presionar una 
-     * tecla que no es de accion.
+     * En este metodo maneja el evento que se genera al presionar una tecla que
+     * no es de accion.
+     *
      * @param e es el <code>evento</code> que se genera en al presionar.
-     * 
+     *
      */
     public void keyTyped(KeyEvent e) {
         // no hay codigo pero se debe escribir el metodo
@@ -454,36 +457,125 @@ public class Juego extends JFrame implements KeyListener, Runnable {
 
     /**
      * keyPressed
-     * 
+     *
      * Metodo sobrescrito de la interface <code>KeyListener</code>.<P>
-     * En este metodo maneja el evento que se genera al dejar presionada
-     * alguna tecla.
+     * En este metodo maneja el evento que se genera al dejar presionada alguna
+     * tecla.
+     *
      * @param keyEvent es el <code>evento</code> generado al presionar.
-     * 
+     *
      */
     public void keyPressed(KeyEvent keEvent) {
-        if(keEvent.getKeyCode() == keEvent.VK_LEFT) {
+        if (keEvent.getKeyCode() == keEvent.VK_LEFT) {
             objBarra.izquierda();
-        }
-        else if(keEvent.getKeyCode() == keEvent.VK_RIGHT) {
+        } else if (keEvent.getKeyCode() == keEvent.VK_RIGHT) {
             objBarra.derecha();
         }
     }
 
     /**
      * keyReleased
-     * 
+     *
      * Metodo sobrescrito de la interface <code>KeyListener</code>.<P>
      * En este metodo maneja el evento que se genera al soltar la tecla.
-     * @param keyEvent es el <code>evento</code> que se genera en al soltar las teclas.
+     *
+     * @param keyEvent es el <code>evento</code> que se genera en al soltar las
+     * teclas.
      */
     public void keyReleased(KeyEvent keEvent) {
-        if(keEvent.getKeyCode() == keEvent.VK_LEFT) {
+        if (keEvent.getKeyCode() == keEvent.VK_LEFT) {
             objBarra.izquierda();
-        }
-        else if(keEvent.getKeyCode() == keEvent.VK_RIGHT) {
+        } else if (keEvent.getKeyCode() == keEvent.VK_RIGHT) {
             objBarra.derecha();
         }
     }
-    
+
+    public void acomodaBloques() throws IOException {
+        try { // checa si encontro el archivo
+            // se lee el archivo
+            bfrEntrada = new BufferedReader(new FileReader("coordenadas.txt"));
+        } catch (FileNotFoundException fnfEx) { // si no lo encuentra
+            // Se crea el archivo con los datos iniciales del juego
+            PrintWriter prwSalida = new PrintWriter(new FileWriter("coordenadas.txt"));
+            prwSalida.println("29,174");
+            prwSalida.println("62,182");
+            prwSalida.println("95,70");
+            prwSalida.println("95,127");
+            prwSalida.println("95,184");
+            prwSalida.println("128,72");
+            prwSalida.println("128,129");
+            prwSalida.println("128,186");
+            prwSalida.println("161,76");
+            prwSalida.println("161,131");
+            prwSalida.println("161,188");
+            prwSalida.println("194,78");
+            prwSalida.println("194,133");
+            prwSalida.println("194,190");
+            prwSalida.println("227,78");
+            prwSalida.println("227,133");
+            prwSalida.println("227,190");
+            prwSalida.println("260,76");
+            prwSalida.println("260,131");
+            prwSalida.println("260,188");
+            prwSalida.println("293,72");
+            prwSalida.println("293,129");
+            prwSalida.println("293,186");
+            prwSalida.println("326,70");
+            prwSalida.println("326,127");
+            prwSalida.println("326,184");
+            prwSalida.println("359,182");
+            prwSalida.println("392,174");
+            prwSalida.println("95,267");
+            prwSalida.println("128,267");
+            prwSalida.println("161,267");
+            prwSalida.println("194,286");
+            prwSalida.println("227,286");
+            prwSalida.println("260,267");
+            prwSalida.println("293,267");
+            prwSalida.println("326,267");
+            prwSalida.println("100,324");
+            prwSalida.println("133,324");
+            prwSalida.println("166,324");
+            prwSalida.println("255,324");
+            prwSalida.println("288,324");
+            prwSalida.println("321,324");
+            prwSalida.println("111,440");
+            prwSalida.println("144,411");
+            prwSalida.println("177,411");
+            prwSalida.println("210,425");
+            prwSalida.println("243,411");
+            prwSalida.println("276,411");
+            prwSalida.println("309,440");
+            prwSalida.println("144,468");
+            prwSalida.println("177,497");
+            prwSalida.println("210,516");
+            prwSalida.println("243,497");
+            prwSalida.println("276,468");
+            prwSalida.close();
+            // se lee el archivo
+            bfrEntrada = new BufferedReader(new FileReader("coordenadas.txt"));
+        }
+        // se vuelve a llenar la lista
+        for (int iI = 0; iI < 54; iI++) {
+            // se carga la imagen del alien corredor
+            URL urlImagenCaminador
+                    = this.getClass().getResource("barrilBB.png");
+            // se crea un alien corredor
+            Objeto objBloque = new Objeto(0, 0,
+                    Toolkit.getDefaultToolkit().getImage(urlImagenCaminador));
+
+            // Se lee la primera linea (vidas)
+            String sDato = bfrEntrada.readLine();
+            // se dividen los datos en un arreglo
+            strArrDatos = sDato.split(",");
+            // se asigna el primer dato a la posX
+            objBloque.setX((Integer.parseInt(strArrDatos[0])));
+            // se asigna el segundo dato a la posX
+            objBloque.setY((Integer.parseInt(strArrDatos[1])));
+
+            // Se agrega al caminador a la lista de corredores
+            lnkBloques.add(objBloque);
+        }
+    }
+
 }
