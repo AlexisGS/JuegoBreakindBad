@@ -35,6 +35,7 @@ import java.util.logging.Logger;
 public class Juego extends JFrame implements KeyListener, Runnable {
     
     // Variables empleadas por Juego
+    private int iTime; //Manejador de tiempo
     private int iVidas; // Cantidad de oportunidades que tiene el jugador
     private int iVelocidadY; //Velocidad en Y
     private int iVelocidadX; //Velocidad en X
@@ -94,7 +95,7 @@ public class Juego extends JFrame implements KeyListener, Runnable {
         objBarra.setX((getWidth() / 2) - (objBarra.getAncho() / 2));
         objBarra.setY( getHeight() - (getHeight() / 6));
         // se le asigna una velocidad de 6
-        objBarra.setVelocidad(6);
+        objBarra.setVelocidad(9);
 
         // se carga la imagen para el proyectil
         URL urlImagenProyectil = 
@@ -274,13 +275,16 @@ public class Juego extends JFrame implements KeyListener, Runnable {
             if (objBloque.colisiona(objProyectil)) {
                 iScore++; // Se aumenta en 1 el score
                 //Si la parte superior de proyectil es mayor o igual a la parte
-                //inferior del bloque(esta golpeando por abajo del bloque) o la
+                //inferior del bloque(esta golpeando por abajo del bloque...
+                if(objProyectil.getY() <= objBloque.getY() 
+                        + objBloque.getAlto()) {
+                    bDireccionY = false; //va hacia abajo
+                }
                 //parte inferior del proyectil es menor o igual a la de la parte
                 //superior del bloque(esta golpeando por arriba)...
-                if(objProyectil.getY() <= objBloque.getY() 
-                        + objBloque.getAlto() || objProyectil.getY() 
-                        + objProyectil.getAlto() >= objBloque.getY()) {
-                    bDireccionY = !bDireccionY; //Direccion contraria de Y
+                else if( objProyectil.getY() + objProyectil.getAlto() 
+                        >= objBloque.getY()) {
+                    bDireccionY = true; //va hacia arriba
                 }
                 //Si esta golpeando por algun otro lugar (los lados)...
                 else
@@ -463,7 +467,7 @@ public class Juego extends JFrame implements KeyListener, Runnable {
         if(keEvent.getKeyCode() == keEvent.VK_LEFT) {
             objBarra.izquierda();
         }
-        if(keEvent.getKeyCode() == keEvent.VK_RIGHT) {
+        else if(keEvent.getKeyCode() == keEvent.VK_RIGHT) {
             objBarra.derecha();
         }
     }
@@ -475,7 +479,13 @@ public class Juego extends JFrame implements KeyListener, Runnable {
      * En este metodo maneja el evento que se genera al soltar la tecla.
      * @param keyEvent es el <code>evento</code> que se genera en al soltar las teclas.
      */
-    public void keyReleased(KeyEvent keyEvent) {
+    public void keyReleased(KeyEvent keEvent) {
+        if(keEvent.getKeyCode() == keEvent.VK_LEFT) {
+            objBarra.izquierda();
+        }
+        else if(keEvent.getKeyCode() == keEvent.VK_RIGHT) {
+            objBarra.derecha();
+        }
     }
     
 }
