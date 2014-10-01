@@ -365,6 +365,21 @@ public class Juego extends JFrame implements KeyListener, Runnable {
             imaImagenApplet = createImage(this.getSize().width,
                     this.getSize().height);
             graGraficaApplet = imaImagenApplet.getGraphics();
+            // Se crea la imagen para el background
+            URL urlImagenFondo = this.getClass().getResource("espacio.jpg");
+            Image imaImagenFondo
+                    = Toolkit.getDefaultToolkit().getImage(urlImagenFondo);
+
+            // Despliego la imagen
+            graGraficaApplet.drawImage(imaImagenFondo, 0, 0,
+                    getWidth(), getHeight(), this);
+
+            // Actualiza el Foreground.
+            graGraficaApplet.setColor(getForeground());
+            paint1(graGraficaApplet);
+
+            // Dibuja la imagen actualizada
+            graGrafico.drawImage(imaImagenApplet, 0, 0, this);
         }
 
         // Se crea la imagen para el background
@@ -398,6 +413,42 @@ public class Juego extends JFrame implements KeyListener, Runnable {
     public void paint1(Graphics graGrafico) {
         // Si las imagenes de Nena y los aliens ya se cargaron
         if (lnkBloques!= null&&objBarra!=null&&objProyectil!=null) {
+            if(iVidas < 0) { //Si se acabaron las vidas
+                //Creo imagen de game over
+                URL urlImagenFin 
+                        = this.getClass().getResource("breaking bit.gif");
+                Image imaImagenFin 
+                        = Toolkit.getDefaultToolkit().getImage(urlImagenFin);
+                //Despliego la imagen
+                graGraficaApplet.drawImage(imaImagenFin, 0, 0, getWidth(),
+                        getHeight(), this);
+            }
+            else { //si el juego sigue corriendo
+                //Dibuja la imagen de la barra en la posicion actualizada
+                graGrafico.drawImage(objBarra.getImagen(), 
+                        objBarra.getX(), objBarra.getY(), this);
+                
+                //Dibuja la imagen del proyectil en la posicicion actualizada
+                graGrafico.drawImage(objProyectil.getImagen(), 
+                        objProyectil.getX(), objProyectil.getY(), this);
+                
+                //Dibuja la lista de bloques en la posicion actualizada
+                for(Object objeBloque : lnkBloques) {
+                    Objeto objBloque = (Objeto) objeBloque;
+                    graGrafico.drawImage(objBloque.getImagen(), 
+                            objBloque.getX(), objBloque.getY(), this);
+                }
+                
+                //Se despliega el score y las vidas
+                //Se crea estilo de Font para el texto
+                Font strTexto= new Font("SansSerif", Font.PLAIN, 20);
+                //Se asigna este estilo de Font al grafico
+                graGrafico.setFont(strTexto);
+                //Muestra el Score
+                graGrafico.drawString("Score: "+ iScore, 25, 70);
+                //Muestra la cantidad de vidas
+                graGrafico.drawString("Vidas: "+iVidas, 25, 50);
+            }
         } 
         else {
             //Da un mensaje mientras se carga el dibujo	
