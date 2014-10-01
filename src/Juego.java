@@ -81,7 +81,7 @@ public class Juego extends JFrame implements KeyListener, Runnable {
         iVelocidadY = 2; //La velocidad en Y empieza en 2
         iVelExtra = 0; //Aun no hay velocidad extra
         // La direccion que nos interesa es: false: Abajo true: Arriba.
-        bDireccionY = false;
+        bDireccionY = true;
         // La direccion que nos interesa es: false: Izq. true: Dererecha
         bDireccionX = true;
         
@@ -105,6 +105,8 @@ public class Juego extends JFrame implements KeyListener, Runnable {
         // se posiciona el proyectil en el centro arriba de barra
         objProyectil.setX((getWidth() / 2) - (objProyectil.getAncho() / 2));
         objProyectil.setY(objBarra.getY() - objProyectil.getAlto());
+        // se le asigna una velocidad de 5
+        objProyectil.setVelocidad(5);
         
         // se crea la lista de bloques a destruir
         lnkBloques = new LinkedList();
@@ -204,21 +206,21 @@ public class Juego extends JFrame implements KeyListener, Runnable {
      *
      */
     public void actualiza() {
-        //Si la direccion X es true(el proyectil va hacia arriba)...
+        //Si la direccion X es true(el proyectil va a la derecha)
         if(bDireccionX) {
+            objProyectil.derecha();
+        }
+        //Si es false (va ala izquierda)
+        else
+            objProyectil.izquierda();
+        
+        //Si la direccion Y es true(el proyectil va hacia arriba)
+        if(bDireccionY) {
             objProyectil.arriba();
         }
         //Si es false (va hacia abajo)
         else
             objProyectil.abajo();
-        
-        //Si la direccion Y es true(el proyectil va hacia la derecha)...
-        if(bDireccionY) {
-            objProyectil.derecha();
-        }
-        //Si es false (va hacia la izquierda)
-        else
-            objProyectil.izquierda();
     }
     
     /**
