@@ -35,6 +35,8 @@ import java.util.logging.Logger;
 public class Juego extends JFrame implements KeyListener, Runnable {
     
     // Variables empleadas por Juego
+    private String[] strArrDatos;
+    private BufferedReader bfrEntrada; // Variable para leer archivos
     private int iTime; //Manejador de tiempo
     private int iNumBloques;//Cuenta cuantos bloques hay
     private int iNumDestruidos; //Cuenta cuantos bloques se destruyeron
@@ -381,7 +383,8 @@ public class Juego extends JFrame implements KeyListener, Runnable {
     public void paint1(Graphics graGrafico) {
         // Si las imagenes ya se cargaron
         if (lnkBloques!= null&&objBarra!=null&&objProyectil!=null) {
-            if(iVidas < 0) { //Si se acabaron las vidas
+            //Si se acabaron las vidas o los bloques
+            if(iVidas < 0 || iNumDestruidos == iNumBloques ) { 
                 //Creo imagen de game over
                 URL urlImagenFin 
                         = this.getClass().getResource("breaking bit.jpg");
@@ -497,5 +500,99 @@ public class Juego extends JFrame implements KeyListener, Runnable {
             objBarra.derecha();
         }
     }
-    
+
+    /**
+     * acomodaBloques
+     *
+     * Metodo usado para crear una forma con los objetos tipo Objeto en una 
+     * LinkedList del <code>JFrame</code>.
+     *
+     */
+    public void acomodaBloques() throws IOException {
+        try { // checa si encontro el archivo
+            // se lee el archivo
+            bfrEntrada = new BufferedReader(new FileReader("coordenadas.txt"));
+        } catch (FileNotFoundException fnfEx) { // si no lo encuentra
+            // Se crea el archivo con los datos iniciales del juego
+            PrintWriter prwSalida = new PrintWriter(new FileWriter("coordenadas.txt"));
+            prwSalida.println("29,174");
+            prwSalida.println("62,182");
+            prwSalida.println("95,70");
+            prwSalida.println("95,127");
+            prwSalida.println("95,184");
+            prwSalida.println("128,72");
+            prwSalida.println("128,129");
+            prwSalida.println("128,186");
+            prwSalida.println("161,76");
+            prwSalida.println("161,131");
+            prwSalida.println("161,188");
+            prwSalida.println("194,78");
+            prwSalida.println("194,133");
+            prwSalida.println("194,190");
+            prwSalida.println("227,78");
+            prwSalida.println("227,133");
+            prwSalida.println("227,190");
+            prwSalida.println("260,76");
+            prwSalida.println("260,131");
+            prwSalida.println("260,188");
+            prwSalida.println("293,72");
+            prwSalida.println("293,129");
+            prwSalida.println("293,186");
+            prwSalida.println("326,70");
+            prwSalida.println("326,127");
+            prwSalida.println("326,184");
+            prwSalida.println("359,182");
+            prwSalida.println("392,174");
+            prwSalida.println("95,267");
+            prwSalida.println("128,267");
+            prwSalida.println("161,267");
+            prwSalida.println("194,286");
+            prwSalida.println("227,286");
+            prwSalida.println("260,267");
+            prwSalida.println("293,267");
+            prwSalida.println("326,267");
+            prwSalida.println("100,324");
+            prwSalida.println("133,324");
+            prwSalida.println("166,324");
+            prwSalida.println("255,324");
+            prwSalida.println("288,324");
+            prwSalida.println("321,324");
+            prwSalida.println("111,440");
+            prwSalida.println("144,411");
+            prwSalida.println("177,411");
+            prwSalida.println("210,425");
+            prwSalida.println("243,411");
+            prwSalida.println("276,411");
+            prwSalida.println("309,440");
+            prwSalida.println("144,468");
+            prwSalida.println("177,497");
+            prwSalida.println("210,516");
+            prwSalida.println("243,497");
+            prwSalida.println("276,468");
+            prwSalida.close();
+            // se lee el archivo
+            bfrEntrada = new BufferedReader(new FileReader("coordenadas.txt"));
+        }
+        // se vuelve a llenar la lista
+        for (int iI = 0; iI < 54; iI++) {
+            // se carga la imagen del alien corredor
+            URL urlImagenCaminador
+                    = this.getClass().getResource("barrilBB.png");
+            // se crea un alien corredor
+            Objeto objBloque = new Objeto(0, 0,
+                    Toolkit.getDefaultToolkit().getImage(urlImagenCaminador));
+
+            // Se lee la primera linea (vidas)
+            String sDato = bfrEntrada.readLine();
+            // se dividen los datos en un arreglo
+            strArrDatos = sDato.split(",");
+            // se asigna el primer dato a la posX
+            objBloque.setX((Integer.parseInt(strArrDatos[0])));
+            // se asigna el segundo dato a la posX
+            objBloque.setY((Integer.parseInt(strArrDatos[1])));
+
+            // Se agrega al caminador a la lista de corredores
+            lnkBloques.add(objBloque);
+        }
+    }
 }
